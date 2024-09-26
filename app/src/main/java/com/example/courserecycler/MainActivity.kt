@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         fabAddCourse = findViewById(R.id.fab_add_course)
         fabAddCourse.setOnClickListener {
             // Start CourseUpdateActivity to add a new course
+            index = courses.size
             val intent = CourseUpdateActivity.newIntent(this, Course("", "", 0.0))
             startActivityIntent.launch(intent)
         }
@@ -85,16 +86,17 @@ class MainActivity : AppCompatActivity() {
                 CourseUpdateActivity.sentMessageCourseUpdateDetails(it)
             }
             courseUpdatedInfo?.let {
-                if (index >= 0 && index < courses.size) {
-                    // Update an existing course
-                    courses[index] = it
-                } else {
-                    // Add a new course
+                if (index >= courses.size) {
                     courses.add(it)
+                    courseAdapter.notifyItemInserted(index) // will update the recyler view in realtime.
+                } else {
+                    courses[index] = it
+                    courseAdapter.notifyItemChanged(index) // will update the recyler view in realtime.
                 }
-                // Refresh the RecyclerView
-                courseAdapter.notifyDataSetChanged()
+
             }
+            // Refresh the RecyclerView
+            courseAdapter.notifyDataSetChanged()
         }
     }
 }
